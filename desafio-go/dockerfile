@@ -1,0 +1,11 @@
+FROM golang:1.22-alpine AS go-alpine
+
+WORKDIR /usr/src/app
+COPY ./full-cycle.go /usr/src/app
+RUN go build -o full-cycle full-cycle.go
+
+FROM scratch
+WORKDIR /usr/src/app
+COPY --from=go-alpine /usr/src/app /usr/src/app
+
+ENTRYPOINT [ "./full-cycle" ]
