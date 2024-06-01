@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  node:
+    build:
+      context: .
+      dockerfile: dockerfile.node
+    image: rafaelcecchin/node
+    container_name: node
+    networks:
+      - nodenet
+    ports:
+      - "3000:3000"
+
+  nginx:
+    build:
+      context: .
+      dockerfile: dockerfile.nginx
+    image: rafaelcecchin/nginx
+    container_name: nginx
+    networks:
+      - nodenet
+    ports:
+      - "80:80"
+
+networks:
+  nodenet:
+    driver: bridge
