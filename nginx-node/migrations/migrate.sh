@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Inicia o entrypoint padrão do MySQL em segundo plano
-/entrypoint.sh mysqld &
-
 # Aguarda o MySQL iniciar completamente
 until mysqladmin ping -h "127.0.0.1" --silent; do
   echo "Aguardando o MySQL iniciar..."
@@ -39,6 +36,3 @@ for file in /root/migrations/*.sql; do
 done
 
 echo "Migrações aplicadas com sucesso."
-
-# Mantém o container rodando
-wait

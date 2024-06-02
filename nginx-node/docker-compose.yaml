@@ -29,10 +29,7 @@ services:
       - "80:80"
     
   db:
-    build:
-      context: .
-      dockerfile: dockerfile.mysql
-    image: rafaelcecchin/mysql
+    image: mysql:5.7.16
     command: --innodb-use-native-aio=0
     container_name: db
     restart: always
@@ -45,6 +42,7 @@ services:
       - MYSQL_ROOT_PASSWORD=root
     networks:
       - nodenet
+    entrypoint: /bin/bash -c "/root/migrations/migrate.sh & /entrypoint.sh mysqld"
 
 networks:
   nodenet:
