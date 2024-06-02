@@ -16,7 +16,7 @@ services:
     ports:
       - "3000:3000"
     command: >
-      sh -c "npm install && nodemon index.js"
+      sh -c "npm install && nodemon --legacy-watch index.js"
     entrypoint: dockerize -wait tcp://db:3306 -timeout 20s docker-entrypoint.sh
     depends_on:
       - db
