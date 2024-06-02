@@ -12,11 +12,17 @@ expressApp.set('views', path.join(__dirname, 'views'));
 
 const port = 3000;
 
+expressApp.use((req, res, next) => {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    next();
+});
+
 const connection = mysql.createConnection({
     host: 'db',
     user: 'root',
     password: 'root',
-    database: 'nodedb'
+    database: 'nodedb',
+    charset: 'utf8'
 });
 
 connection.connect((err) => {
