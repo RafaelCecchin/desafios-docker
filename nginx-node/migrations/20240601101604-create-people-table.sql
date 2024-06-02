@@ -7,7 +7,7 @@ USE nodedb;
 -- | name  | varchar(150) | NO   |     | NULL    |                |
 -- +-------+--------------+------+-----+---------+----------------+
 
-CREATE TABLE people (
+CREATE TABLE IF NOT EXISTS people (
     id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(150) NOT NULL
 )
