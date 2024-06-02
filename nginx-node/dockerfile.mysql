@@ -1,0 +1,9 @@
+FROM mysql:5.7.16
+
+WORKDIR /root
+RUN mkdir migrations
+
+COPY ./migrations /root/migrations
+COPY ./config/db-entrypoint.sh /db-entrypoint.sh
+
+ENTRYPOINT [ "/db-entrypoint.sh" ]
