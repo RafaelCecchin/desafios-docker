@@ -1,12 +1,20 @@
 const express = require('express');
 const http = require('http');
+const path = require('path');
+const exphbs = require('express-handlebars').create({});
 const expressApp = express();
 const server = http.createServer(expressApp);
+
+expressApp.engine('handlebars', exphbs.engine);
+expressApp.set('view engine', 'handlebars');
+expressApp.set('views', path.join(__dirname, 'views'));
 
 const port = 3000;
 
 expressApp.get('/', (req, res) => {
-    res.send('<h1>Full Cycle Rocks!</h1>');
+    const data = {};
+    
+    res.render('index', data);
 });
 
 server.listen(port, () => {
