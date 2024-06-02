@@ -34,6 +34,7 @@ services:
     tty: true
     volumes:
       - ./db:/var/lib/mysql
+      - ./migrations:/root/migrations
     environment:
       - MYSQL_DATABASE=nodedb
       - MYSQL_ROOT_PASSWORD=root
