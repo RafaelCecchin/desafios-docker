@@ -1,6 +1,7 @@
 version: '3'
 
 services:
+
   node:
     build:
       context: .
@@ -15,7 +16,10 @@ services:
     ports:
       - "3000:3000"
     command: >
-      sh -c "npm install && node index.js"
+      sh -c "npm install && nodemon index.js"
+    entrypoint: dockerize -wait tcp://db:3306 -timeout 20s docker-entrypoint.sh
+    depends_on:
+      - db
 
   nginx:
     build:
@@ -27,6 +31,8 @@ services:
       - nodenet
     ports:
       - "80:80"
+    depends_on:
+      - node
     
   db:
     image: mysql:5.7.16
@@ -40,6 +46,8 @@ services:
     environment:
       - MYSQL_DATABASE=nodedb
       - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_COLLATION=utf8_general_ci
+      - MYSQL_CHARSET=utf8
     networks:
       - nodenet
     entrypoint: /bin/bash -c "/root/migrations/migrate.sh & /entrypoint.sh mysqld"

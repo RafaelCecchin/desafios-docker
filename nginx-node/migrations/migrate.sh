@@ -3,7 +3,7 @@
 # Aguarda o MySQL iniciar completamente
 until mysqladmin ping -h "127.0.0.1" --silent; do
   echo "Aguardando o MySQL iniciar..."
-  sleep 2
+  sleep 1
 done
 
 echo "MySQL iniciado com sucesso."
