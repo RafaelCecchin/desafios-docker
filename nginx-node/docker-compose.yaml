@@ -7,10 +7,15 @@ services:
       dockerfile: dockerfile.node
     image: rafaelcecchin/node
     container_name: node
+    tty: true
+    volumes:
+      - ./app:/usr/src/app
     networks:
       - nodenet
     ports:
       - "3000:3000"
+    command: >
+      sh -c "npm install && node index.js"
 
   nginx:
     build:
