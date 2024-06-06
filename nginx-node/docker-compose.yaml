@@ -13,8 +13,6 @@ services:
       - ./app:/usr/src/app
     networks:
       - nodenet
-    ports:
-      - "3000:3000"
     command: >
       sh -c "npm install && nodemon --legacy-watch index.js"
     entrypoint: dockerize -wait tcp://db:3306 -timeout 20s docker-entrypoint.sh
@@ -30,7 +28,7 @@ services:
     networks:
       - nodenet
     ports:
-      - "80:80"
+      - "8080:80"
     depends_on:
       - node
     
