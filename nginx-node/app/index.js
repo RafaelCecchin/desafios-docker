@@ -3,12 +3,15 @@ const http = require('http');
 const path = require('path');
 const exphbs = require('express-handlebars').create({});
 const mysql = require('mysql');
+const bodyParser = require('body-parser');
 const expressApp = express();
 const server = http.createServer(expressApp);
 
 expressApp.engine('handlebars', exphbs.engine);
 expressApp.set('view engine', 'handlebars');
 expressApp.set('views', path.join(__dirname, 'views'));
+expressApp.use(bodyParser.urlencoded({ extended: true }));
+expressApp.use(bodyParser.json());
 
 const port = 3000;
 
@@ -45,6 +48,26 @@ expressApp.get('/', (req, res) => {
         
         const names = results.map(result => result.name);
         res.render('index', { names });
+    });
+});
+
+expressApp.post('/', (req, res) => {
+    const name = req.body.name;
+    
+    if (!name) {
+        res.status(400).send('Nome é obrigatório');
+        return;
+    }
+
+    const sql = 'INSERT INTO people (name) VALUES (?)';
+    connection.query(sql, [name], (err, results) => {
+        if (err) {
+            console.error('Erro ao inserir no banco de dados:', err);
+            res.status(500).send('Erro interno do servidor');
+            return;
+        }
+
+        res.redirect('/');
     });
 });
 
