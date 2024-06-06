@@ -1,5 +1,5 @@
 USE nodedb;
-ALTER DATABASE nodedb CHARACTER SET utf8 COLLATE utf8_general_ci;
+ALTER DATABASE nodedb CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- +-------+--------------+------+-----+---------+----------------+
 -- | Field | Type         | Null | Key | Default | Extra          |
@@ -11,4 +11,4 @@ ALTER DATABASE nodedb CHARACTER SET utf8 COLLATE utf8_general_ci;
 CREATE TABLE IF NOT EXISTS people (
     id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(150) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

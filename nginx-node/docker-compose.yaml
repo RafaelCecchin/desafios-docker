@@ -35,7 +35,10 @@ services:
       - node
     
   db:
-    image: mysql:5.7.16
+    build:
+      context: .
+      dockerfile: dockerfile.db
+    image: rafaelcecchin/db
     command: --innodb-use-native-aio=0
     container_name: db
     restart: always
@@ -46,11 +49,12 @@ services:
     environment:
       - MYSQL_DATABASE=nodedb
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_COLLATION=utf8_general_ci
-      - MYSQL_CHARSET=utf8
+      - MYSQL_COLLATION=utf8mb4_general_ci
+      - MYSQL_CHARSET=utf8mb4
+      - LANG=C.UTF_8
     networks:
       - nodenet
-    entrypoint: /bin/bash -c "/root/migrations/migrate.sh & /entrypoint.sh mysqld"
+    entrypoint: /bin/bash -c "/root/migrations/migrate.sh & /entrypoint.sh mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci"
 
 networks:
   nodenet:
