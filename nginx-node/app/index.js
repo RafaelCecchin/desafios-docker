@@ -37,17 +37,39 @@ connection.connect((err) => {
 });
 
 expressApp.get('/', (req, res) => {
-    const sql = 'SELECT name FROM people';
-    
-    connection.query(sql, (err, results) => {
+    const checkTableSql = `
+        SELECT COUNT(*)
+        FROM information_schema.tables 
+        WHERE table_schema = 'nodedb' 
+        AND table_name = 'people'
+    `;
+
+    connection.query(checkTableSql, (err, results) => {
         if (err) {
-            console.error('Erro ao executar a consulta:', err);
+            console.error('Erro ao verificar a existência da tabela:', err);
             res.status(500).send('Erro interno do servidor');
             return;
         }
+
+        const tableExists = results[0]['COUNT(*)'] > 0;
+        if (!tableExists) {
+            console.error('A tabela "people" não existe.');
+            res.status(404).send('A tabela "people" não foi encontrada. Aguarde a migration ser realizada...');
+            return;
+        }
+
+        const sql = 'SELECT name FROM people';
         
-        const names = results.map(result => result.name);
-        res.render('index', { names });
+        connection.query(sql, (err, results) => {
+            if (err) {
+                console.error('Erro ao executar a consulta:', err);
+                res.status(500).send('Erro interno do servidor');
+                return;
+            }
+            
+            const names = results.map(result => result.name);
+            res.render('index', { names });
+        });
     });
 });
 
