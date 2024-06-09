@@ -18,7 +18,7 @@ services:
     entrypoint: dockerize -wait tcp://db:3306 -timeout 120s docker-entrypoint.sh
     depends_on:
       - db
-
+      
   nginx:
     build:
       context: .
@@ -52,7 +52,6 @@ services:
       - LANG=C.UTF_8
     networks:
       - nodenet
-    entrypoint: /bin/bash -c "/root/migrations/migrate.sh & /entrypoint.sh mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci"
 
 networks:
   nodenet:

@@ -1,5 +1,3 @@
-USE nodedb;
-
 INSERT INTO people (name) VALUES 
     ("Zezé Di Camargo"),
     ("Luciano"),
@@ -30,14 +28,4 @@ INSERT INTO people (name) VALUES
     ("Simone"),
     ("Simaria"),
     ("Matheus"),
-    ("Kauan"),
-    ("João Bosco"),
-    ("Vinícius"),
-    ("Munhoz"),
-    ("Mariano"),
-    ("João Neto"),
-    ("Frederico"),
-    ("Cleber"),
-    ("Cauan"),
-    ("Rick"),
-    ("Renner");
+    ("Kauan");

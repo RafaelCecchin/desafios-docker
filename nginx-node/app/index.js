@@ -4,6 +4,7 @@ const path = require('path');
 const exphbs = require('express-handlebars').create({});
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
+const fs = require('fs');
 const expressApp = express();
 const server = http.createServer(expressApp);
 
@@ -32,44 +33,83 @@ connection.connect((err) => {
     if (err) {
         console.error('Erro ao conectar ao banco de dados:', err);
         return;
-    } 
+    }
     console.log('Conexão bem-sucedida ao banco de dados MySQL');
+    runMigrations();
 });
 
-expressApp.get('/', (req, res) => {
-    const checkTableSql = `
-        SELECT COUNT(*)
-        FROM information_schema.tables 
-        WHERE table_schema = 'nodedb' 
-        AND table_name = 'people'
+function runMigrations() {
+    const createMigrationsTable = `
+        CREATE TABLE IF NOT EXISTS migrations (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            run_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
     `;
 
-    connection.query(checkTableSql, (err, results) => {
+    connection.query(createMigrationsTable, (err) => {
         if (err) {
-            console.error('Erro ao verificar a existência da tabela:', err);
-            res.status(500).send('Erro interno do servidor');
+            console.error('Erro ao criar a tabela de migrations:', err);
             return;
         }
-
-        const tableExists = results[0]['COUNT(*)'] > 0;
-        if (!tableExists) {
-            console.error('A tabela "people" não existe.');
-            res.status(404).send('A tabela "people" não foi encontrada. Aguarde a migration ser realizada...');
-            return;
-        }
-
-        const sql = 'SELECT name FROM people';
         
-        connection.query(sql, (err, results) => {
+        const migrationsDir = path.join(__dirname, 'migrations');
+        fs.readdir(migrationsDir, (err, files) => {
             if (err) {
-                console.error('Erro ao executar a consulta:', err);
-                res.status(500).send('Erro interno do servidor');
+                console.error('Erro ao ler o diretório de migrations:', err);
                 return;
             }
             
-            const names = results.map(result => result.name);
-            res.render('index', { names });
+            connection.query('SELECT name FROM migrations', (err, results) => {
+                if (err) {
+                    console.error('Erro ao obter lista de migrations aplicadas:', err);
+                    return;
+                }
+
+                const appliedMigrations = results.map(row => row.name);
+                const pendingMigrations = files.filter(file => !appliedMigrations.includes(file));
+                
+                pendingMigrations.forEach(migration => {
+                    const migrationPath = path.join(migrationsDir, migration);
+                    const migrationSql = fs.readFileSync(migrationPath, 'utf-8');
+
+                    connection.query(migrationSql, (err) => {
+                        if (err) {
+                            console.error(`Erro ao aplicar a migration ${migration}:`, err);
+                            return;
+                        }
+                        
+                        connection.query('INSERT INTO migrations (name) VALUES (?)', [migration], (err) => {
+                            if (err) {
+                                console.error(`Erro ao registrar a migration ${migration}:`, err);
+                                return;
+                            }
+
+                            console.log(`Migration ${migration} aplicada com sucesso.`);
+                        });
+                    });
+                });
+                
+                server.listen(port, () => {
+                    console.log(`Servidor rodando na porta ${port}`);
+                });
+            });
         });
+    });
+}
+
+expressApp.get('/', (req, res) => {
+    const sql = 'SELECT name FROM people';
+        
+    connection.query(sql, (err, results) => {
+        if (err) {
+            console.error('Erro ao executar a consulta:', err);
+            res.status(500).send('Erro interno do servidor');
+            return;
+        }
+        
+        const names = results.map(result => result.name);
+        res.render('index', { names });
     });
 });
 
@@ -91,8 +131,4 @@ expressApp.post('/', (req, res) => {
 
         res.redirect('/');
     });
-});
-
-server.listen(port, () => {
-    console.log(`Servidor rodando na porta ${port}`);
 });
