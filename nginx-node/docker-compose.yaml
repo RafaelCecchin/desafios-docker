@@ -15,7 +15,7 @@ services:
       - nodenet
     command: >
       sh -c "npm install && nodemon --legacy-watch index.js"
-    entrypoint: dockerize -wait tcp://db:3306 -timeout 20s docker-entrypoint.sh
+    entrypoint: dockerize -wait tcp://db:3306 -timeout 120s docker-entrypoint.sh
     depends_on:
       - db
 
